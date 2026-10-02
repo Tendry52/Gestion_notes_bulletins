@@ -1,0 +1,49 @@
+{
+  "name": "gestion-notes-bulletins",
+  "version": "6.0.0",
+  "description": "API de gestion des notes et bulletins scolaires - Projet INFO-321 (L2-IDEV)",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
+    "seed": "node scripts/seed.js",
+    "test": "jest --runInBand",
+    "test:unit": "jest --runInBand tests/unit",
+    "admin": "node scripts/creer-admin.js"
+  },
+  "keywords": [
+    "express",
+    "mongodb",
+    "jwt",
+    "notes",
+    "bulletins"
+  ],
+  "author": "Steph",
+  "license": "ISC",
+  "jest": {
+    "testEnvironment": "node",
+    "testTimeout": 60000,
+    "setupFiles": [
+      "<rootDir>/tests/helpers/env.js"
+    ]
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.4",
+    "express": "^4.22.3",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "^9.0.3",
+    "mongoose": "^8.24.4"
+  },
+  "devDependencies": {
+    "jest": "^30.5.2",
+    "mongodb-memory-server": "^10.4.3",
+    "nodemon": "^3.1.14",
+    "supertest": "^7.3.0"
+  }
+}

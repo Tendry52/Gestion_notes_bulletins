@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestion des Notes et Bulletins Scolaires</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <header>
+    <h1>📚 Gestion des Notes et Bulletins Scolaires</h1>
+    <div id="infoUtilisateur" class="cachee">
+      <span id="nomUtilisateur"></span>
+      <button id="btnMotDePasse" type="button" class="btn-secondaire">🔑 Mot de passe</button>
+      <button id="btnDeconnexion" type="button">Déconnexion</button>
+    </div>
+  </header>
+
+  <div id="notification" class="notification cachee" role="status" aria-live="polite"></div>
+
+  <main>
+    <!-- Authentification : pas d'inscription, les comptes sont créés par l'administrateur -->
+    <section id="sectionAuth">
+      <form id="formConnexion" class="formulaire">
+        <h2>Connexion</h2>
+        <input type="email" id="connexionEmail" placeholder="Identifiant (email)" autocomplete="username" required />
+        <input type="password" id="connexionMotDePasse" placeholder="Mot de passe" autocomplete="current-password" required />
+        <button type="submit">Se connecter</button>
+        <p class="aide">Élèves et enseignants : utilisez l'identifiant et le mot de passe remis par l'administrateur.</p>
+      </form>
+
+      <p id="messageAuth" class="message" role="alert"></p>
+    </section>
+
+    <!-- Espace de gestion : enseignant (saisie) et administrateur (consultation + structure) -->
+    <section id="sectionGestion" class="cachee">
+      <div class="entete-section">
+        <h2 id="titreGestion">Espace Enseignant</h2>
+        <label class="champ champ-classe">Classe active
+          <select id="classeActive"></select>
+        </label>
+      </div>
+      <p id="avisClasses" class="aide cachee"></p>
+
+      <nav class="sous-onglets" aria-label="Sections">
+        <button type="button" class="sous-onglet" data-panneau="panneauSaisie" data-roles="enseignant">✎ Saisie des notes</button>
+        <button type="button" class="sous-onglet" data-panneau="panneauMatieres" data-roles="enseignant admin">📘 Matières</button>
+        <button type="button" class="sous-onglet" data-panneau="panneauClasses" data-roles="admin">🏫 Classes</button>
+        <button type="button" class="sous-onglet" data-panneau="panneauEleves" data-roles="admin">🎓 Élèves</button>
+        <button type="button" class="sous-onglet" data-panneau="panneauNotes" data-roles="enseignant admin">☰ Notes par élève</button>
+        <button type="button" class="sous-onglet" data-panneau="panneauClasse" data-roles="enseignant admin">🏆 Classe &amp; bulletins</button>
+      </nav>
+
+      <!-- Saisie -->
+      <div id="panneauSaisie" class="panneau">
+        <div class="bloc">
+          <h3>Saisie rapide pour toute la classe</h3>
+          <p class="aide">Choisissez la classe active (en haut à droite), la matière et l'évaluation, puis remplissez la colonne « Note ». Les cases vides sont ignorées.</p>
+          <form id="formLot">
+            <div class="formulaire-inline">
+              <label class="champ">Matière <select id="lotMatiere" required></select></label>
+              <label class="champ">Type
+                <select id="lotType">
+                  <option value="devoir">Devoir</option>
+                  <option value="controle">Contrôle</option>
+                  <option value="examen">Examen</option>
+                  <option value="tp">TP</option>
+                </select>
+              </label>
+              <label class="champ">Coef. de l'évaluation <input type="number" id="lotCoefficient" min="1" max="20" step="any" value="1" /></label>
+              <label class="champ">Date <input type="date" id="lotDate" required /></label>
+            </div>
+            <div id="lotEleves"></div>
+            <button type="submit" id="btnEnregistrerLot">Enregistrer les notes</button>
+          </form>
+          <p class="aide">Vous ne pouvez noter que dans les matières dont vous êtes responsable.</p>
+        </div>
+
+        <div class="bloc">
+          <h3>Ajouter une note à un seul élève</h3>
+          <form id="formNote" class="formulaire-inline">
+            <select id="noteEleve" required aria-label="Élève"></select>
+            <select id="noteMatiere" required aria-label="Matière"></select>
+            <input type="number" id="noteValeur" placeholder="Note /20" min="0" max="20" step="any" required />
+            <select id="noteType" aria-label="Type">
+              <option value="devoir">Devoir</option>
+              <option value="controle">Contrôle</option>
+              <option value="examen">Examen</option>
+              <option value="tp">TP</option>
+            </select>
+            <input type="number" id="noteCoefficient" placeholder="Coef. note" min="1" max="20" step="any" value="1" />
+            <input type="date" id="noteDate" aria-label="Date de l'évaluation" required />
+            <button type="submit">Ajouter</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Matières -->
+      <div id="panneauMatieres" class="panneau cachee">
+        <!-- Administrateur : création, modification, accès -->
+        <div id="blocAdminMatieres" class="cachee">
+          <div class="bloc">
+            <h3>+ Créer une matière et son accès enseignant</h3>
+            <form id="formMatiere" class="formulaire-inline">
+              <input type="text" id="matiereNom" placeholder="Nom de la matière" maxlength="100" required />
+              <input type="number" id="matiereCoefficient" placeholder="Coefficient" min="1" max="20" step="any" value="1" required />
+              <input type="email" id="matiereIdentifiant" placeholder="Identifiant (facultatif, généré sinon)" maxlength="254" />
+              <button type="submit">Créer</button>
+            </form>
+            <p class="aide">Un mot de passe est généré automatiquement et affiché une seule fois : transmettez-le à l'enseignant. Rattachez ensuite la matière à ses classes dans l'onglet « Classes ». L'administrateur ne peut pas modifier les notes.</p>
+          </div>
+          <div class="bloc">
+            <h3>Matières et accès</h3>
+            <div id="listeMatieresAdmin"></div>
+          </div>
+        </div>
+        <!-- Enseignant : lecture seule -->
+        <div id="blocListeMatieres" class="bloc cachee">
+          <h3>Matières</h3>
+          <p class="aide">Les matières, les classes et les accès sont gérés par l'administrateur. Vous ne pouvez noter que dans la vôtre.</p>
+          <div id="listeMatieres"></div>
+        </div>
+      </div>
+
+      <!-- Classes (administrateur) -->
+      <div id="panneauClasses" class="panneau cachee">
+        <div class="bloc">
+          <h3>+ Ajouter une classe</h3>
+          <form id="formClasse">
+            <label class="champ">Nom de la classe
+              <input type="text" id="classeNom" placeholder="ex : L2-IDEV" maxlength="50" required />
+            </label>
+            <fieldset class="cases">
+              <legend>Matières enseignées dans cette classe (leurs enseignants y interviendront)</legend>
+              <div id="classeMatieres"></div>
+            </fieldset>
+            <button type="submit">Créer la classe</button>
+          </form>
+          <p class="aide">Un enseignant ne peut noter que les élèves des classes où sa matière est enseignée. Ajoutez ensuite ses élèves dans l'onglet « Élèves ».</p>
+        </div>
+        <div class="bloc">
+          <h3>Classes</h3>
+          <div id="listeClasses"></div>
+        </div>
+      </div>
+
+      <!-- Élèves (administrateur) -->
+      <div id="panneauEleves" class="panneau cachee">
+        <div class="bloc">
+          <h3>+ Ajouter un élève et son accès</h3>
+          <form id="formEleve">
+            <div class="formulaire-inline">
+              <label class="champ">Nom <input type="text" id="eleveNom" maxlength="100" required /></label>
+              <label class="champ">Prénom <input type="text" id="elevePrenom" maxlength="100" required /></label>
+              <label class="champ">Classe <select id="eleveClasse" required></select></label>
+              <label class="champ">Date de naissance <input type="date" id="eleveNaissance" /></label>
+            </div>
+            <div class="formulaire-inline">
+              <label class="champ">Adresse <input type="text" id="eleveAdresse" maxlength="200" /></label>
+              <label class="champ">Téléphone <input type="tel" id="eleveTelephone" maxlength="30" /></label>
+              <label class="champ">Parent / tuteur <input type="text" id="eleveTuteur" maxlength="150" /></label>
+              <label class="champ">Identifiant (facultatif) <input type="email" id="eleveIdentifiant" maxlength="254" placeholder="généré sinon" /></label>
+            </div>
+            <button type="submit">Ajouter l'élève</button>
+          </form>
+          <p class="aide">L'identifiant (de la forme email) et un mot de passe sont créés automatiquement : le mot de passe est affiché une seule fois, transmettez-le à l'élève. La classe doit déjà exister (onglet « Classes »).</p>
+        </div>
+        <div class="bloc">
+          <div class="entete-section">
+            <h3>Élèves</h3>
+            <span id="resumeEleves" class="aide"></span>
+          </div>
+          <div id="listeElevesAdmin"></div>
+        </div>
+      </div>
+
+      <!-- Notes par élève -->
+      <div id="panneauNotes" class="panneau cachee">
+        <div class="bloc">
+          <h3>Notes d'un élève</h3>
+          <div class="formulaire-inline">
+            <label class="champ">Élève <select id="gestionEleveSelect"></select></label>
+            <label class="champ">Matière <select id="gestionMatiereSelect"></select></label>
+          </div>
+          <div id="listeNotesGestion"></div>
+        </div>
+      </div>
+
+      <!-- Classe & bulletins -->
+      <div id="panneauClasse" class="panneau cachee">
+        <div id="infoClasse" class="bloc cachee"></div>
+        <div class="bloc">
+          <h3>Classement de la classe active</h3>
+          <button type="button" id="btnClassement">Afficher le classement</button>
+          <div id="resultatClassement"></div>
+        </div>
+        <div class="bloc">
+          <h3>Bulletin d'un élève</h3>
+          <div class="formulaire-inline">
+            <select id="bulletinEleveSelect" aria-label="Élève"></select>
+            <button type="button" id="btnVoirBulletin">Voir le bulletin</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Espace Élève -->
+    <section id="sectionEleve" class="cachee">
+      <h2>Espace Élève</h2>
+      <button type="button" id="btnMonBulletin">☰ Voir mon bulletin</button>
+      <div class="bloc">
+        <div class="entete-section">
+          <h3>Mes notes</h3>
+          <label class="champ">Matière <select id="filtreMatiereEleve"></select></label>
+        </div>
+        <div id="listeNotesEleve"></div>
+      </div>
+    </section>
+
+    <!-- Bulletin -->
+    <section id="sectionBulletin" class="cachee">
+      <h2>Bulletin scolaire</h2>
+      <div class="barre-actions">
+        <button type="button" id="btnImprimerBulletin">🖨 Imprimer</button>
+        <button type="button" id="btnFermerBulletin" class="btn-secondaire">× Fermer</button>
+      </div>
+      <div id="contenuBulletin"></div>
+    </section>
+  </main>
+
+  <!-- Fenêtre de saisie générique (modification d'une matière / d'une classe / d'un élève / d'une note, mot de passe) -->
+  <dialog id="dialogue">
+    <form id="formDialogue" class="formulaire">
+      <h3 id="dialogueTitre"></h3>
+      <div id="dialogueChamps" class="formulaire"></div>
+      <p id="dialogueErreur" class="message" role="alert"></p>
+      <div class="barre-actions">
+        <button type="submit" id="dialogueValider">Enregistrer</button>
+        <button type="button" id="dialogueAnnuler" class="btn-secondaire">Annuler</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Affichage unique des identifiants d'un compte créé ou réinitialisé (matière ou élève) -->
+  <dialog id="dialogueAcces">
+    <div class="formulaire">
+      <h3>Accès de « <span id="accesMatiere"></span> »</h3>
+      <p class="aide">Notez ces informations maintenant : le mot de passe ne pourra plus être affiché (seulement réinitialisé).</p>
+      <label class="champ">Identifiant <input id="accesIdentifiant" type="text" readonly /></label>
+      <label class="champ">Mot de passe <input id="accesMotDePasse" type="text" readonly /></label>
+      <div class="barre-actions">
+        <button type="button" id="accesCopier">Copier les deux</button>
+        <button type="button" id="accesFermer" class="btn-secondaire">Fermer</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

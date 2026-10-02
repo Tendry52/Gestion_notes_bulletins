@@ -1,0 +1,388 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #f4f6f8;
+  margin: 0;
+  color: #222;
+}
+
+header {
+  background: #2c3e50;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header h1 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+#infoUtilisateur {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+main {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.cachee {
+  display: none !important;
+}
+
+section {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.onglets {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.onglet {
+  padding: 0.5rem 1rem;
+  border: none;
+  background: #eee;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.onglet.actif {
+  background: #2c3e50;
+  color: white;
+}
+
+.formulaire,
+.formulaire-inline {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  max-width: 400px;
+}
+
+.formulaire-inline {
+  flex-direction: row;
+  flex-wrap: wrap;
+  max-width: none;
+  align-items: center;
+}
+
+input,
+select,
+button {
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 0.95rem;
+}
+
+button {
+  background: #2980b9;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+button:hover {
+  background: #1f618d;
+}
+
+.message {
+  color: #c0392b;
+  font-weight: bold;
+}
+
+.bloc {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 0.5rem;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  text-align: left;
+}
+
+th {
+  background: #ecf0f1;
+}
+
+.moyenne-generale {
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-top: 1rem;
+  color: #2c3e50;
+}
+
+.mention {
+  font-style: italic;
+  color: #16a085;
+}
+
+/* ---------- Ajouts v2 ---------- */
+.aide {
+  color: #7f8c8d;
+  font-size: 0.85rem;
+  margin: 0.4rem 0 0;
+}
+
+.rang {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.barre-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.btn-secondaire {
+  background: #7f8c8d;
+}
+
+.btn-secondaire:hover {
+  background: #626d6e;
+}
+
+.btn-petit {
+  padding: 0.25rem 0.6rem;
+  font-size: 0.85rem;
+}
+
+.btn-danger {
+  background: #c0392b;
+}
+
+.btn-danger:hover {
+  background: #922b21;
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.notification {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 10;
+  max-width: 350px;
+  padding: 0.8rem 1.1rem;
+  border-radius: 6px;
+  color: white;
+  font-weight: 600;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+}
+
+.notification.succes {
+  background: #27ae60;
+}
+
+.notification.erreur {
+  background: #c0392b;
+}
+
+#listeMatieres,
+#listeNotesGestion,
+#listeNotesEleve,
+#contenuBulletin {
+  overflow-x: auto;
+}
+
+@media (max-width: 600px) {
+  header {
+    flex-direction: column;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  main {
+    margin: 1rem auto;
+  }
+}
+
+/* Impression : seul le bulletin est imprimé */
+@media print {
+  body {
+    background: white;
+  }
+
+  header,
+  #sectionAuth,
+  #sectionEnseignant,
+  #sectionEleve,
+  .barre-actions,
+  .notification {
+    display: none !important;
+  }
+
+  section {
+    box-shadow: none;
+    padding: 0;
+  }
+}
+
+/* ---------- Ajouts v3 ---------- */
+.entete-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.entete-section h2,
+.entete-section h3 {
+  margin: 0;
+}
+
+.champ {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+  color: #555;
+}
+
+.sous-onglets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 1rem 0 0;
+  border-bottom: 2px solid #ecf0f1;
+}
+
+.sous-onglet {
+  background: #eee;
+  color: #333;
+  border-radius: 4px 4px 0 0;
+}
+
+.sous-onglet:hover {
+  background: #dfe6e9;
+}
+
+.sous-onglet.actif {
+  background: #2c3e50;
+  color: white;
+}
+
+#lotEleves {
+  margin: 0.8rem 0;
+}
+
+.table-saisie input {
+  width: 6rem;
+}
+
+.lien-bulletin {
+  font-weight: 600;
+}
+
+.nombre {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.resume-classe {
+  margin: 0.8rem 0 0;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.notes-detail {
+  font-size: 0.85rem;
+  color: #555;
+}
+
+dialog {
+  border: none;
+  border-radius: 8px;
+  padding: 1.5rem;
+  min-width: min(360px, 92vw);
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+dialog h3 {
+  margin: 0;
+}
+
+dialog .barre-actions {
+  margin: 0;
+}
+
+#resultatClassement {
+  overflow-x: auto;
+}
+
+/* Impression : seul le bulletin est imprimé (remplace la règle précédente) */
+@media print {
+  main > section:not(#sectionBulletin),
+  dialog {
+    display: none !important;
+  }
+}
+
+/* Fenêtre d'affichage des accès d'une matière */
+#dialogueAcces { border: 1px solid #ccc; border-radius: 8px; padding: 1.25rem; max-width: 26rem; width: calc(100% - 2rem); }
+#dialogueAcces input[readonly] { font-family: ui-monospace, Menlo, Consolas, monospace; }
+
+/* ---------- Classes (v5) ---------- */
+fieldset.cases {
+  border: 1px solid #dfe6e9;
+  border-radius: 6px;
+  padding: 0.6rem 0.9rem;
+  margin: 0.8rem 0;
+}
+
+fieldset.cases legend {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #2c3e50;
+  padding: 0 0.4rem;
+}
+
+.case {
+  display: block;
+  padding: 0.25rem 0;
+  cursor: pointer;
+}
+
+.case input {
+  width: auto;
+  margin-right: 0.4rem;
+}
+
+.liste-simple {
+  margin: 0;
+  padding-left: 1.1rem;
+}
